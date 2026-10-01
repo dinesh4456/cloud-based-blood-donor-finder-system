@@ -1,0 +1,976 @@
+/* ==========================================================================
+   Blood Donor Finder System - Premium Responsive Stylesheet
+   ========================================================================== */
+
+:root {
+  --primary-red: #dc2626;
+  --primary-red-hover: #b91c1c;
+  --primary-red-light: #fee2e2;
+  --primary-red-dark: #991b1b;
+  --secondary-dark: #0f172a;
+  --secondary-slate: #334155;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --bg-light: #f8fafc;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 25px rgba(220, 38, 38, 0.12);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-light);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Header & Navigation
+   ========================================================================== */
+
+.navbar-custom {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.35rem;
+  color: var(--secondary-dark) !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon-box {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+.nav-link {
+  font-weight: 500;
+  color: var(--secondary-slate) !important;
+  padding: 0.5rem 1rem !important;
+  transition: color 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--primary-red) !important;
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+
+.hero-section {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 50%, #fef2f2 100%);
+  padding: 4.5rem 0 3.5rem;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+}
+
+.hero-title {
+  font-weight: 800;
+  font-size: 2.8rem;
+  color: var(--secondary-dark);
+  line-height: 1.2;
+}
+
+.hero-title span {
+  color: var(--primary-red);
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 620px;
+  margin-bottom: 2rem;
+}
+
+/* Quick Search Card */
+.search-widget-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+  padding: 1.75rem;
+  border: 1px solid rgba(220, 38, 38, 0.12);
+  margin-top: 1.5rem;
+}
+
+/* Modern Premium Search Card (Replaces Retro Box) */
+.premium-search-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(220, 38, 38, 0.14);
+  border-top: 4px solid var(--primary-red);
+  padding: 2rem 2.25rem 1.75rem;
+  box-shadow: 0 20px 45px rgba(220, 38, 38, 0.1), 0 6px 18px rgba(0, 0, 0, 0.04);
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.premium-search-card:hover {
+  box-shadow: 0 24px 50px rgba(220, 38, 38, 0.14), 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.premium-search-card .search-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef2f2;
+  color: var(--primary-red);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 50px;
+  margin-bottom: 0.5rem;
+}
+
+.premium-search-card .search-title {
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--secondary-dark);
+  line-height: 1.25;
+  margin-bottom: 0.25rem;
+}
+
+.premium-search-card .search-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.35rem;
+}
+
+.premium-search-card .form-group-custom {
+  margin-bottom: 0.85rem;
+}
+
+.premium-search-card .form-label-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--secondary-slate);
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.premium-search-card .form-label-custom i {
+  color: var(--primary-red);
+  font-size: 0.85rem;
+}
+
+.premium-search-card .form-select-custom {
+  width: 100%;
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-size: 0.88rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.premium-search-card .form-select-custom:focus {
+  outline: none;
+  background-color: #ffffff;
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.premium-search-card .search-btn-gradient {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.4px;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.premium-search-card .search-btn-gradient:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.45);
+}
+
+.donor-location-tag {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  color: #334155;
+  margin-top: 4px;
+}
+
+.donor-location-tag .loc-mandal {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   KPI Counters Strip
+   ========================================================================== */
+
+.stat-pill-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-pill-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-icon.red { background: #fee2e2; color: #dc2626; }
+.stat-icon.green { background: #d1fae5; color: #059669; }
+.stat-icon.blue { background: #e0e7ff; color: #4338ca; }
+.stat-icon.amber { background: #fef3c7; color: #d97706; }
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--secondary-dark);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Donor Card & Badge Styles
+   ========================================================================== */
+
+.donor-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  transition: all 0.25s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.donor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-color: #fca5a5;
+}
+
+.blood-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.15rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.25);
+}
+
+.status-badge-available {
+  background-color: #dcfce7;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-badge-unavailable {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.status-dot.available { background-color: #16a34a; }
+.status-dot.unavailable { background-color: #dc2626; }
+
+/* Filter Buttons */
+.blood-filter-btn {
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  color: var(--secondary-slate);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.blood-filter-btn:hover {
+  border-color: var(--primary-red);
+  color: var(--primary-red);
+}
+
+.blood-filter-btn.active {
+  background: var(--primary-red);
+  color: #ffffff;
+  border-color: var(--primary-red);
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
+}
+
+/* ==========================================================================
+   Request Cards
+   ========================================================================== */
+
+.request-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.request-card.critical {
+  border-left: 5px solid #dc2626;
+}
+
+.request-card.high {
+  border-left: 5px solid #f97316;
+}
+
+.request-card.medium {
+  border-left: 5px solid #eab308;
+}
+
+.request-card.low {
+  border-left: 5px solid #3b82f6;
+}
+
+.badge-urgency-critical { background: #fee2e2; color: #991b1b; }
+.badge-urgency-high { background: #ffedd5; color: #9a3412; }
+.badge-urgency-medium { background: #fef9c3; color: #854d0e; }
+.badge-urgency-low { background: #dbeafe; color: #1e40af; }
+
+.badge-status-pending { background: #fef3c7; color: #92400e; }
+.badge-status-accepted { background: #d1fae5; color: #065f46; }
+.badge-status-rejected { background: #fee2e2; color: #991b1b; }
+.badge-status-completed { background: #e0e7ff; color: #3730a3; }
+.badge-status-cancelled { background: #f1f5f9; color: #475569; }
+
+/* ==========================================================================
+   Admin Section
+   ========================================================================== */
+
+.admin-header {
+  background: #1e293b;
+  color: #ffffff;
+  padding: 1.5rem 0;
+  border-radius: var(--radius-md);
+  margin-bottom: 2rem;
+}
+
+.table-custom {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.table-custom thead th {
+  background: #f8fafc;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border-color);
+  padding: 12px 16px;
+}
+
+.table-custom tbody td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Compatibility Chart
+   ========================================================================== */
+
+.compat-table th, .compat-table td {
+  text-align: center;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+
+.compat-yes {
+  background: #dcfce7 !important;
+  color: #166534;
+  font-weight: 700;
+}
+
+.compat-no {
+  background: #f8fafc !important;
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   Custom Buttons & Elements
+   ========================================================================== */
+
+.btn-blood-red {
+  background: var(--primary-red);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-blood-red:hover {
+  background: var(--primary-red-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-outline-blood {
+  border: 1.5px solid var(--primary-red);
+  color: var(--primary-red);
+  font-weight: 600;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1.3rem;
+  transition: all 0.2s;
+}
+
+.btn-outline-blood:hover {
+  background: var(--primary-red);
+  color: #ffffff;
+}
+
+/* Toast Container */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  background: #0f172a;
+  color: #94a3b8;
+  padding: 3rem 0 1.5rem;
+  border-top: 1px solid #1e293b;
+}
+
+footer a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+footer a:hover {
+  color: #ef4444;
+}
+
+
+/* ==========================================================================
+   Interactive Donor Radar & Map Styling
+   ========================================================================== */
+
+/* Map Layout & Container */
+#donors-map {
+  min-height: 540px;
+  width: 100%;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  z-index: 1;
+}
+
+.sticky-map-card {
+  position: sticky;
+  top: 80px;
+  z-index: 5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* View Mode Transitions */
+.view-split #donors-cards-column {
+  transition: all 0.3s ease;
+}
+
+.view-split #donors-map-column {
+  transition: all 0.3s ease;
+}
+
+/* Floating Map Legend */
+.map-floating-legend {
+  position: absolute;
+  bottom: 24px;
+  left: 14px;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--secondary-slate);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.available {
+  background-color: #dc2626;
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.6);
+}
+
+.legend-dot.unavailable {
+  background-color: #64748b;
+}
+
+.legend-dot.user-pos {
+  background-color: #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+}
+
+/* Custom Blood Drop Map Marker */
+.custom-donor-pin-outer {
+  background: transparent;
+  border: none;
+}
+
+.donor-pin-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.donor-pin-container:hover {
+  transform: translateY(-5px) scale(1.1);
+  z-index: 999 !important;
+}
+
+.donor-pin-head {
+  width: 38px;
+  height: 38px;
+  border-radius: 50% 50% 50% 4px;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+.pin-droplet-icon {
+  display: none;
+}
+
+.pin-blood-group {
+  transform: rotate(45deg);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.donor-pin-arrow {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #dc2626;
+  margin-top: -3px;
+}
+
+/* Radar Pulse Animation for Available Donors */
+.donor-radar-pulse {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.4);
+  animation: donor-pulse 2s infinite ease-out;
+  pointer-events: none;
+}
+
+@keyframes donor-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* User Location GPS Pin */
+.custom-user-location-pin {
+  background: transparent;
+  border: none;
+}
+
+.user-location-marker {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-marker-center {
+  width: 22px;
+  height: 22px;
+  background: #2563eb;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.5);
+  z-index: 2;
+}
+
+.user-radar-ring {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.35);
+  animation: user-pulse 1.8s infinite ease-out;
+  z-index: 1;
+}
+
+@keyframes user-pulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Custom Leaflet Popup Card */
+.custom-leaflet-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.custom-leaflet-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 14px 16px;
+  line-height: 1.4;
+}
+
+.custom-leaflet-popup .leaflet-popup-tip {
+  background: #ffffff;
+}
+
+.donor-map-popup .donor-popup-name {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--secondary-dark);
+}
+
+.popup-distance-tag {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 6px;
+  border: 1px solid #bfdbfe;
+}
+
+/* Donor Card Locate Button */
+.btn-locate-donor {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-locate-donor:hover {
+  background: var(--primary-red);
+  color: #ffffff;
+  border-color: var(--primary-red);
+}
+
+/* Donor Registration Picker Map */
+#donor-picker-map {
+  background: #f8fafc;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.custom-picker-pin {
+  background: transparent;
+  border: none;
+}
+
+.picker-pin-bubble {
+  filter: drop-shadow(0 3px 5px rgba(220, 38, 38, 0.4));
+  animation: bounce 0.6s ease infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-6px); }
+}
+
+.btn-xs {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.72rem;
+  border-radius: 4px;
+}
+
+
+/* Address Search Pin & Pulse Styling */
+.custom-address-search-pin {
+  background: transparent;
+  border: none;
+}
+
+.address-search-marker {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.address-marker-center {
+  width: 24px;
+  height: 24px;
+  background: #dc2626;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.5);
+  z-index: 2;
+}
+
+.address-radar-ring {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.35);
+  animation: address-pulse 1.8s infinite ease-out;
+  z-index: 1;
+}
+
+@keyframes address-pulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.donor-popup-address {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+#picker-address-feedback {
+  font-size: 0.76rem;
+  max-width: 60%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Map Empty State Overlay */
+.map-empty-overlay {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  pointer-events: auto;
+}
+
+.map-empty-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 6px 16px;
+  border-radius: 30px;
+  border: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--secondary-slate);
+  display: flex;
+  align-items: center;
+}

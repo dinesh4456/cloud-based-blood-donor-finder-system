@@ -1,0 +1,27 @@
+[Unit]
+Description=Cloud-Based Blood Donor Finder System (Spring Boot Production Service)
+After=syslog.target network.target mysql.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/bloodfinder
+EnvironmentFile=/opt/bloodfinder/.env
+ExecStart=/usr/bin/java -jar /opt/bloodfinder/blood-donor-finder-system-1.0.0.jar
+SuccessExitStatus=143
+TimeoutStopSec=30
+Restart=always
+RestartSec=10
+
+# Security Hardening
+ProtectSystem=full
+ProtectHome=true
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource Limits
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

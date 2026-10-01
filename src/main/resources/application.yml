@@ -1,0 +1,52 @@
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: always
+  shutdown: graceful
+
+spring:
+  application:
+    name: blood-donor-finder-system
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:blood_donor_finder_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:root}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:}}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: BloodFinderHikariPool
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+
+  mvc:
+    static-path-pattern: /**
+
+# Application specific configurations
+app:
+  jwt:
+    # 256-bit secure secret key
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    # 24 hours in milliseconds (86,400,000)
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    token-prefix: "Bearer "
+    header-string: "Authorization"
+  seed-data: ${APP_SEED_DATA:false}
+
+logging:
+  level:
+    root: INFO
+    com.bloodfinder: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN
