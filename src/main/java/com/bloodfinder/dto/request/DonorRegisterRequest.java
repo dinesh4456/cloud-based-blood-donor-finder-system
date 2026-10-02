@@ -35,6 +35,7 @@ public class DonorRegisterRequest {
     private String city;
 
     private String profilePhoto;
+    private String profileImageUrl;
     private String address;
     private Double latitude;
     private Double longitude;

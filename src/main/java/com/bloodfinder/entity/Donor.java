@@ -66,6 +66,9 @@ public class Donor {
     @Column(name = "profile_photo", length = 500)
     private String profilePhoto;
 
+    @Column(name = "profile_image_url", length = 500)
+    private String profileImageUrl;
+
     @Column(name = "contact_number", nullable = false, length = 20)
     private String contactNumber;
 

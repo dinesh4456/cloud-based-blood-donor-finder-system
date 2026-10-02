@@ -13,3 +13,11 @@ spring:
 
 app:
   seed-data: false
+
+# AWS S3 Configuration
+aws:
+  access-key: ${AWS_ACCESS_KEY:dummy-access-key}
+  secret-key: ${AWS_SECRET_KEY:dummy-secret-key}
+  region: us-east-1
+  s3:
+    bucket-name: blood-donor-finder-images
