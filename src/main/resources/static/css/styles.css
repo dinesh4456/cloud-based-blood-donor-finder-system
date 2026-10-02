@@ -974,3 +974,22 @@ footer a:hover {
   display: flex;
   align-items: center;
 }
+
+/* Donor Profile Avatar Styles */
+.donor-card-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-red-light);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.donor-popup-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fee2e2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}

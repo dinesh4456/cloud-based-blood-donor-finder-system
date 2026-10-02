@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -102,4 +103,15 @@ public class DonorController {
         Map<String, Long> summary = donorService.getBloodGroupDistribution();
         return ResponseEntity.ok(ApiResponse.success("Blood group statistics retrieved", summary));
     }
+
+    @PostMapping(value = "/profile-photo", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('DONOR', 'USER', 'ADMIN')")
+    public ResponseEntity<ApiResponse<DonorResponse>> uploadProfilePhoto(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        log.info("User {} uploading donor profile photo", currentUser.getId());
+        DonorResponse response = donorService.uploadProfilePhoto(currentUser.getId(), file);
+        return ResponseEntity.ok(ApiResponse.success("Profile photo uploaded successfully", response));
+    }
+
 }

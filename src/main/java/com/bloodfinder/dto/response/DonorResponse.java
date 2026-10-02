@@ -31,6 +31,7 @@ public class DonorResponse {
     private String address;
     private Double latitude;
     private Double longitude;
+    private String profilePhoto;
     private String contactNumber;
     private LocalDate lastDonationDate;
     private AvailabilityStatus availabilityStatus;

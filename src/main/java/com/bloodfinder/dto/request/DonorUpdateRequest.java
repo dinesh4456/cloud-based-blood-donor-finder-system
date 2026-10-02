@@ -34,6 +34,7 @@ public class DonorUpdateRequest {
     @NotBlank(message = "City is required")
     private String city;
 
+    private String profilePhoto;
     private String address;
     private Double latitude;
     private Double longitude;

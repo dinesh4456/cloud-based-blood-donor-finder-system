@@ -52,7 +52,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Static web pages and assets
-                .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/uploads/**").permitAll()
                 
                 // Public health checks for AWS ALB, ECS, Route 53
                 .requestMatchers("/api/health/**").permitAll()

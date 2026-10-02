@@ -63,6 +63,9 @@ public class Donor {
     @Column(name = "longitude")
     private Double longitude;
 
+    @Column(name = "profile_photo", length = 500)
+    private String profilePhoto;
+
     @Column(name = "contact_number", nullable = false, length = 20)
     private String contactNumber;
 

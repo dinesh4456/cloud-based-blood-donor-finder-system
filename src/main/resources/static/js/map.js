@@ -423,7 +423,12 @@ const DonorMap = {
             </span>
           </div>
 
-          <h6 class="donor-popup-name mb-1">${this.escapeHtml(donor.name)}</h6>
+          <div class="d-flex align-items-center mb-1">
+            ${donor.profilePhoto ? `<img src="${donor.profilePhoto}" class="donor-popup-avatar me-2" alt="${this.escapeHtml(donor.name)}">` : ''}
+            <div>
+              <h6 class="donor-popup-name mb-0">${this.escapeHtml(donor.name)}</h6>
+            </div>
+          </div>
           
           <!-- Mentioned Address Card -->
           <div class="donor-popup-address my-2 p-2 bg-light rounded border small">

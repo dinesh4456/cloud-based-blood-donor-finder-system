@@ -58,6 +58,7 @@ public class DonorServiceImpl implements DonorService {
                 .village(request.getVillage() != null ? request.getVillage().trim() : null)
                 .city(request.getCity() != null ? request.getCity().trim() : "")
                 .address(request.getAddress() != null ? request.getAddress().trim() : null)
+                .profilePhoto(request.getProfilePhoto() != null && !request.getProfilePhoto().trim().isEmpty() ? request.getProfilePhoto().trim() : null)
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .contactNumber(request.getContactNumber().trim())
@@ -96,6 +97,9 @@ public class DonorServiceImpl implements DonorService {
         donor.setVillage(request.getVillage() != null ? request.getVillage().trim() : null);
         donor.setCity(request.getCity() != null ? request.getCity().trim() : donor.getCity());
         donor.setAddress(request.getAddress() != null ? request.getAddress().trim() : null);
+        if (request.getProfilePhoto() != null && !request.getProfilePhoto().trim().isEmpty()) {
+            donor.setProfilePhoto(request.getProfilePhoto().trim());
+        }
         donor.setLatitude(request.getLatitude());
         donor.setLongitude(request.getLongitude());
         donor.setContactNumber(request.getContactNumber().trim());
@@ -207,6 +211,7 @@ public class DonorServiceImpl implements DonorService {
                 .address(donor.getAddress())
                 .latitude(donor.getLatitude())
                 .longitude(donor.getLongitude())
+                .profilePhoto(donor.getProfilePhoto())
                 .contactNumber(donor.getContactNumber())
                 .lastDonationDate(donor.getLastDonationDate())
                 .availabilityStatus(donor.getAvailabilityStatus())
@@ -214,4 +219,55 @@ public class DonorServiceImpl implements DonorService {
                 .createdAt(donor.getCreatedAt())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public DonorResponse uploadProfilePhoto(Long userId, org.springframework.web.multipart.MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("Please select a valid image file to upload");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new BadRequestException("Only image files (JPEG, PNG, WEBP) are allowed");
+        }
+
+        java.util.Optional<Donor> donorOpt = donorRepository.findByUserId(userId);
+
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String extension = ".jpg";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            }
+
+            String donorIdentifier = donorOpt.isPresent() ? String.valueOf(donorOpt.get().getId()) : "user_" + userId;
+            String newFilename = "donor_" + donorIdentifier + "_" + System.currentTimeMillis() + extension;
+            java.nio.file.Path uploadDir = java.nio.file.Paths.get("uploads", "donors");
+            if (!java.nio.file.Files.exists(uploadDir)) {
+                java.nio.file.Files.createDirectories(uploadDir);
+            }
+
+            java.nio.file.Path filePath = uploadDir.resolve(newFilename);
+            java.nio.file.Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            String photoUrl = "/uploads/donors/" + newFilename;
+            if (donorOpt.isPresent()) {
+                Donor donor = donorOpt.get();
+                donor.setProfilePhoto(photoUrl);
+                Donor updated = donorRepository.save(donor);
+                log.info("Profile photo updated for donor {}: {}", donor.getId(), photoUrl);
+                return mapToResponse(updated);
+            } else {
+                log.info("Profile photo saved for unregistered user {}: {}", userId, photoUrl);
+                return DonorResponse.builder()
+                        .profilePhoto(photoUrl)
+                        .build();
+            }
+        } catch (java.io.IOException e) {
+            log.error("Failed to store profile photo", e);
+            throw new BadRequestException("Failed to upload profile photo: " + e.getMessage());
+        }
+    }
+
 }

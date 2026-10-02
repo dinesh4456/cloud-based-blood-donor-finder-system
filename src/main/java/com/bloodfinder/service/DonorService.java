@@ -21,6 +21,8 @@ public interface DonorService {
 
     DonorResponse getDonorById(Long donorId);
 
+    DonorResponse uploadProfilePhoto(Long userId, org.springframework.web.multipart.MultipartFile file);
+
     List<DonorResponse> searchDonors(BloodGroup bloodGroup, String country, String state, String district, String mandal, String village, String city, AvailabilityStatus availability);
 
     List<DonorResponse> getAvailableDonors();

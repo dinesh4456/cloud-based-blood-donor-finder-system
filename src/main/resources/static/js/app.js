@@ -326,7 +326,8 @@ const App = {
           lastDonationDate: document.getElementById('donor-last-date').value || null,
           availabilityStatus: document.getElementById('donor-availability').value,
           latitude: parseFloat(document.getElementById('donor-latitude')?.value) || null,
-          longitude: parseFloat(document.getElementById('donor-longitude')?.value) || null
+          longitude: parseFloat(document.getElementById('donor-longitude')?.value) || null,
+            profilePhoto: document.getElementById('donor-profile-photo-url')?.value || null
         };
 
         const btn = donorForm.querySelector('button[type="submit"]');
@@ -481,7 +482,8 @@ const App = {
           <div class="donor-card shadow-sm h-100 d-flex flex-column">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <div class="d-flex align-items-center gap-3">
-                <div class="blood-badge">${donor.bloodGroupDisplay || donor.bloodGroup}</div>
+                ${donor.profilePhoto ? `<img src="${this.escapeHtml(donor.profilePhoto)}" alt="${this.escapeHtml(donor.name)}" class="donor-card-avatar" onerror="this.style.display='none'">` : ''}
+                  <div class="blood-badge">${donor.bloodGroupDisplay || donor.bloodGroup}</div>
                 <div>
                   <h6 class="mb-0 fw-bold text-dark">${this.escapeHtml(donor.name)}</h6>
                   <small class="text-muted"><i class="bi bi-geo-alt-fill text-danger me-1"></i>${this.escapeHtml(donor.city || donor.district || '')}</small>
@@ -798,6 +800,14 @@ const App = {
           document.getElementById('donor-contact').value = donor.contactNumber;
           document.getElementById('donor-last-date').value = donor.lastDonationDate || '';
           document.getElementById('donor-availability').value = donor.availabilityStatus;
+          if (donor.profilePhoto) {
+            const preview = document.getElementById('donor-photo-preview');
+            if (preview) preview.src = donor.profilePhoto;
+            const urlInput = document.getElementById('donor-profile-photo-url');
+            if (urlInput) urlInput.value = donor.profilePhoto;
+            const statusEl = document.getElementById('donor-photo-status');
+            if (statusEl) statusEl.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Current photo active</span>';
+          }
 
           if (typeof DonorMap !== 'undefined') {
             DonorMap.initPicker(donor.latitude, donor.longitude);
@@ -825,6 +835,16 @@ const App = {
     } else {
       document.getElementById('donorModalLabel').innerHTML = '<i class="bi bi-heart-pulse-fill text-danger me-2"></i>Register as Blood Donor';
       document.getElementById('donor-is-update').value = 'false';
+        const preview = document.getElementById('donor-photo-preview');
+        if (preview) {
+          preview.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'/%3E%3Cpath fill-rule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z'/%3E%3C/svg%3E";
+        }
+        const urlInput = document.getElementById('donor-profile-photo-url');
+        if (urlInput) urlInput.value = '';
+        const fileInput = document.getElementById('donor-photo-file');
+        if (fileInput) fileInput.value = '';
+        const statusEl = document.getElementById('donor-photo-status');
+        if (statusEl) statusEl.innerHTML = 'Choose a PNG, JPG, or WEBP photo (Max 5MB)';
 
       if (typeof DonorMap !== 'undefined') {
         DonorMap.initPicker();
@@ -1095,7 +1115,82 @@ const App = {
     toastEl.addEventListener('hidden.bs.toast', () => {
       toastEl.remove();
     });
-  }
+  },
+
+  // =========================================================================
+  // Donor Profile Photo Handling
+  // =========================================================================
+
+  previewDonorPhoto(input) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        this.showToast('Photo size must be less than 5MB', 'warning');
+        input.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const preview = document.getElementById('donor-photo-preview');
+        if (preview) preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  },
+
+  async uploadDonorPhoto() {
+    if (!Auth.isAuthenticated()) {
+      this.showToast('Please sign in to upload a profile photo', 'warning');
+      return;
+    }
+
+    const fileInput = document.getElementById('donor-photo-file');
+    if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+      this.showToast('Please select a photo file first', 'warning');
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const btn = document.getElementById('btn-upload-photo');
+    const statusEl = document.getElementById('donor-photo-status');
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Uploading...';
+      }
+      if (statusEl) {
+        statusEl.innerHTML = '<span class="text-primary"><i class="bi bi-arrow-repeat spin me-1"></i>Uploading photo...</span>';
+      }
+
+      const res = await API.upload('/donors/profile-photo', formData);
+      if (res && res.success && res.data) {
+        const photoUrl = res.data.profilePhoto;
+        document.getElementById('donor-profile-photo-url').value = photoUrl;
+        const preview = document.getElementById('donor-photo-preview');
+        if (preview) preview.src = photoUrl;
+        if (statusEl) {
+          statusEl.innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Photo uploaded successfully!</span>';
+        }
+        this.showToast('Profile photo uploaded successfully!', 'success');
+        this.loadDonors();
+      }
+    } catch (err) {
+      console.error('Photo upload failed:', err);
+      if (statusEl) {
+        statusEl.innerHTML = `<span class="text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>${err.message || 'Upload failed'}</span>`;
+      }
+      this.showToast(err.message || 'Failed to upload photo', 'danger');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-upload me-1"></i>Upload Profile Photo';
+      }
+    }
+  },
 };
 
 // Start application when DOM is ready

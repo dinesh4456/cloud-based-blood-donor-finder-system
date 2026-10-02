@@ -115,4 +115,24 @@ const API = {
   delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
   },
+
+  upload(endpoint, formData) {
+    const url = `${this.BASE_URL}${endpoint}`;
+    const headers = {};
+    const token = this.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    }).then(async res => {
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(data?.message || data?.error || `Upload failed with status ${res.status}`);
+      }
+      return data;
+    });
+  },
 };
