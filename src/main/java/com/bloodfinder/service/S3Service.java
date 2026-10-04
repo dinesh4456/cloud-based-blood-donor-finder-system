@@ -25,9 +25,18 @@ public class S3Service {
 
     public String uploadFile(MultipartFile file) throws IOException {
 
+        System.out.println("========== S3 Upload ==========");
+        System.out.println("Original Name : " + file.getOriginalFilename());
+        System.out.println("Content Type  : " + file.getContentType());
+        System.out.println("Size          : " + file.getSize());
+
+        byte[] bytes = file.getBytes();
+        System.out.println("Byte Length   : " + bytes.length);
+
         String originalName = file.getOriginalFilename();
-        String safeName = (originalName != null && !originalName.trim().isEmpty()) 
-                ? originalName.replaceAll("[^a-zA-Z0-9._-]", "_") 
+
+        String safeName = (originalName != null && !originalName.trim().isEmpty())
+                ? originalName.replaceAll("[^a-zA-Z0-9._-]", "_")
                 : "photo.jpg";
 
         String fileName = UUID.randomUUID() + "_" + safeName;
@@ -35,13 +44,15 @@ public class S3Service {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
-                .contentType(file.getContentType() != null ? file.getContentType() : "image/jpeg")
+                .contentType(file.getContentType())
                 .build();
 
         s3Client.putObject(
                 putObjectRequest,
-                RequestBody.fromBytes(file.getBytes()));
+                RequestBody.fromBytes(bytes));
 
-        return "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
+        System.out.println("Upload completed.");
+
+        return "https://" + bucketName + ".s3.us-east-1.amazonaws.com/" + fileName;
     }
 }

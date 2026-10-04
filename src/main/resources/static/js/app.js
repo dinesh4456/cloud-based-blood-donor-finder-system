@@ -31,7 +31,13 @@ const App = {
         stateEl: document.getElementById('hero-state'),
         districtEl: document.getElementById('hero-district'),
         mandalEl: document.getElementById('hero-mandal'),
-        villageEl: document.getElementById('hero-village')
+        villageEl: document.getElementById('hero-village'),
+        placeholders: {
+          state: 'All States',
+          district: 'All Districts',
+          mandal: 'All Mandals / Taluks',
+          village: 'All Villages / Towns'
+        }
       });
     }
   },
@@ -313,21 +319,32 @@ const App = {
       donorForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const isUpdate = document.getElementById('donor-is-update').value === 'true';
+        
+        // Auto-resolve city if village or mandal is provided and city is blank
+        let cityVal = document.getElementById('donor-city')?.value?.trim() || '';
+        const villageVal = document.getElementById('donor-village')?.value?.trim() || '';
+        const mandalVal = document.getElementById('donor-mandal')?.value?.trim() || '';
+        const districtVal = document.getElementById('donor-district')?.value?.trim() || '';
+
+        if (!cityVal) {
+          cityVal = villageVal || mandalVal || districtVal || 'Local Area';
+        }
+
         const payload = {
           bloodGroup: document.getElementById('donor-blood-group').value,
           country: 'India',
           state: document.getElementById('donor-state')?.value || '',
-          district: document.getElementById('donor-district')?.value || '',
-          mandal: document.getElementById('donor-mandal')?.value || '',
-          village: document.getElementById('donor-village')?.value || '',
-          city: document.getElementById('donor-city')?.value || '',
-          address: document.getElementById('donor-address').value,
+          district: districtVal,
+          mandal: mandalVal,
+          village: villageVal,
+          city: cityVal,
+          address: document.getElementById('donor-address').value || '',
           contactNumber: document.getElementById('donor-contact').value,
           lastDonationDate: document.getElementById('donor-last-date').value || null,
           availabilityStatus: document.getElementById('donor-availability').value,
           latitude: parseFloat(document.getElementById('donor-latitude')?.value) || null,
           longitude: parseFloat(document.getElementById('donor-longitude')?.value) || null,
-            profilePhoto: document.getElementById('donor-profile-photo-url')?.value || null
+          profilePhoto: document.getElementById('donor-profile-photo-url')?.value || null
         };
 
         const btn = donorForm.querySelector('button[type="submit"]');
@@ -337,9 +354,24 @@ const App = {
           
           let response;
           if (isUpdate) {
-            response = await API.put('/donors/profile', payload);
+            try {
+              response = await API.put('/donors/profile', payload);
+            } catch (putErr) {
+              // If PUT fails (e.g. 404 donor record not created yet), fallback to POST /register
+              console.warn('PUT /donors/profile failed, attempting POST /donors/register:', putErr);
+              response = await API.post('/donors/register', payload);
+            }
           } else {
-            response = await API.post('/donors/register', payload);
+            try {
+              response = await API.post('/donors/register', payload);
+            } catch (postErr) {
+              // If POST fails because user already has donor record, fallback to PUT /profile
+              if (postErr.message && (postErr.message.includes('already') || postErr.message.includes('exists'))) {
+                response = await API.put('/donors/profile', payload);
+              } else {
+                throw postErr;
+              }
+            }
           }
 
           if (response && response.success) {
@@ -348,9 +380,11 @@ const App = {
             API.setUser(Auth.currentUser);
             Auth.updateUI();
             bootstrap.Modal.getInstance(document.getElementById('donorModal')).hide();
-            this.showToast(isUpdate ? 'Donor profile updated!' : 'Congratulations! You are now a registered blood donor.', 'success');
+            this.showToast(isUpdate ? 'Donor profile updated successfully!' : 'Congratulations! You are now a registered blood donor.', 'success');
             this.loadDonors();
             this.loadStats();
+          } else {
+            throw new Error(response?.message || 'Failed to save donor record');
           }
         } catch (err) {
           this.showToast(err.message || 'Failed to save donor details', 'danger');
@@ -787,79 +821,78 @@ const App = {
     // Default contact to user phone
     document.getElementById('donor-contact').value = Auth.currentUser?.phone || '';
 
-    if (Auth.isDonor()) {
-      // Load current donor details
-      try {
-        const res = await API.get('/donors/my-profile');
-        if (res && res.success) {
-          const donor = res.data;
-          document.getElementById('donorModalLabel').innerHTML = '<i class="bi bi-pencil-square text-danger me-2"></i>Edit Donor Profile';
-          document.getElementById('donor-is-update').value = 'true';
-          document.getElementById('donor-blood-group').value = donor.bloodGroup;
-          document.getElementById('donor-address').value = donor.address || '';
-          document.getElementById('donor-contact').value = donor.contactNumber;
-          document.getElementById('donor-last-date').value = donor.lastDonationDate || '';
-          document.getElementById('donor-availability').value = donor.availabilityStatus;
-          if (donor.profilePhoto) {
-            const preview = document.getElementById('donor-photo-preview');
-            if (preview) preview.src = donor.profilePhoto;
-            const urlInput = document.getElementById('donor-profile-photo-url');
-            if (urlInput) urlInput.value = donor.profilePhoto;
-            const statusEl = document.getElementById('donor-photo-status');
-            if (statusEl) statusEl.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Current photo active</span>';
-          }
+    let donorData = null;
+    let isUpdate = false;
 
-          if (typeof DonorMap !== 'undefined') {
-            DonorMap.initPicker(donor.latitude, donor.longitude);
-          }
+    // Check if donor profile already exists on backend
+    try {
+      const res = await API.get('/donors/my-profile');
+      if (res && res.success && res.data) {
+        donorData = res.data;
+        isUpdate = true;
+      }
+    } catch (err) {
+      console.log('No existing donor profile found on server, opening fresh registration form.');
+      isUpdate = false;
+    }
 
-          if (typeof Locations !== 'undefined') {
-            Locations.setupFullCascading({
-              country: 'India',
-              stateEl: document.getElementById('donor-state'),
-              districtEl: document.getElementById('donor-district'),
-              mandalEl: document.getElementById('donor-mandal'),
-              villageEl: document.getElementById('donor-village'),
-              initialValues: {
-                state: donor.state || '',
-                district: donor.district || '',
-                mandal: donor.mandal || '',
-                village: donor.village || ''
-              }
-            });
-          }
-        }
-      } catch (err) {
-        console.warn('Could not load donor profile:', err);
+    const preview = document.getElementById('donor-photo-preview');
+    const urlInput = document.getElementById('donor-profile-photo-url');
+    const fileInput = document.getElementById('donor-photo-file');
+    const statusEl = document.getElementById('donor-photo-status');
+
+    if (isUpdate && donorData) {
+      document.getElementById('donorModalLabel').innerHTML = '<i class="bi bi-pencil-square text-danger me-2"></i>Edit Donor Profile';
+      document.getElementById('donor-is-update').value = 'true';
+      document.getElementById('donor-blood-group').value = donorData.bloodGroup || '';
+      document.getElementById('donor-city').value = donorData.city || '';
+      document.getElementById('donor-address').value = donorData.address || '';
+      document.getElementById('donor-contact').value = donorData.contactNumber || Auth.currentUser?.phone || '';
+      document.getElementById('donor-last-date').value = donorData.lastDonationDate || '';
+      document.getElementById('donor-availability').value = donorData.availabilityStatus || 'AVAILABLE';
+
+      const photo = donorData.profilePhoto || donorData.profileImageUrl;
+      if (photo) {
+        if (preview) preview.src = photo;
+        if (urlInput) urlInput.value = photo;
+        if (statusEl) statusEl.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Current photo active</span>';
       }
     } else {
       document.getElementById('donorModalLabel').innerHTML = '<i class="bi bi-heart-pulse-fill text-danger me-2"></i>Register as Blood Donor';
       document.getElementById('donor-is-update').value = 'false';
-        const preview = document.getElementById('donor-photo-preview');
-        if (preview) {
-          preview.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'/%3E%3Cpath fill-rule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z'/%3E%3C/svg%3E";
+      if (preview) {
+        preview.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'/%3E%3Cpath fill-rule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z'/%3E%3C/svg%3E";
+      }
+      if (urlInput) urlInput.value = '';
+      if (fileInput) fileInput.value = '';
+      if (statusEl) statusEl.innerHTML = 'Choose a PNG, JPG, or WEBP photo (Max 5MB)';
+    }
+
+    // Always setup location dropdowns and map picker
+    if (typeof Locations !== 'undefined') {
+      Locations.setupFullCascading({
+        country: 'India',
+        stateEl: document.getElementById('donor-state'),
+        districtEl: document.getElementById('donor-district'),
+        mandalEl: document.getElementById('donor-mandal'),
+        villageEl: document.getElementById('donor-village'),
+        initialValues: {
+          state: donorData?.state || '',
+          district: donorData?.district || '',
+          mandal: donorData?.mandal || '',
+          village: donorData?.village || ''
+        },
+        placeholders: {
+          state: '-- Select State --',
+          district: '-- Select District --',
+          mandal: '-- Select Mandal / Taluk --',
+          village: '-- Select Village / Locality --'
         }
-        const urlInput = document.getElementById('donor-profile-photo-url');
-        if (urlInput) urlInput.value = '';
-        const fileInput = document.getElementById('donor-photo-file');
-        if (fileInput) fileInput.value = '';
-        const statusEl = document.getElementById('donor-photo-status');
-        if (statusEl) statusEl.innerHTML = 'Choose a PNG, JPG, or WEBP photo (Max 5MB)';
+      });
+    }
 
-      if (typeof DonorMap !== 'undefined') {
-        DonorMap.initPicker();
-      }
-
-      if (typeof Locations !== 'undefined') {
-        Locations.setupFullCascading({
-          country: 'India',
-          stateEl: document.getElementById('donor-state'),
-          districtEl: document.getElementById('donor-district'),
-          mandalEl: document.getElementById('donor-mandal'),
-          villageEl: document.getElementById('donor-village'),
-          initialValues: {}
-        });
-      }
+    if (typeof DonorMap !== 'undefined') {
+      DonorMap.initPicker(donorData?.latitude, donorData?.longitude);
     }
 
     new bootstrap.Modal(modalEl).show();

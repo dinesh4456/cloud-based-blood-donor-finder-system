@@ -28,7 +28,7 @@ const LocationData = {
       },
       "Guntur": {
         "Guntur Urban": ["Guntur City", "Arundelpet", "Brodipet", "Pattabhipuram"],
-        "Tenali": ["Tenali Town", "Angalakuduru", "Pinapadu"],
+        "Tenali": ["Tenali Town", "Nandhivelugu", "Nandivelugu", "Angalakuduru", "Pinapadu", "Chinaravuru", "Burripalem", "Kollipara", "Duggirala"],
         "Mangalagiri": ["Mangalagiri Town", "Nowlur", "Nidamarru", "Kuragallu"],
         "Narasaraopet": ["Narasaraopet Town", "Prakash Nagar", "Lingamguntla"],
         "Bapatla": ["Bapatla Town", "Suryalanka", "Karlapalem"]
@@ -656,31 +656,60 @@ const LocationData = {
 };
 
 const Locations = {
-  defaultSelectText: "All / Any",
+  defaultSelectText: "-- Select --",
   customOptionValue: "__CUSTOM__",
 
-  populateSelect(selectEl, items, selectedVal = "", defaultLabel = null) {
-    if (!selectEl) return;
-    const placeholder = defaultLabel !== null ? defaultLabel : this.defaultSelectText;
-    selectEl.innerHTML = `<option value="">${placeholder}</option>`;
-    
-    // Sort items alphabetically for a clean user experience
-    const sorted = [...items].sort((a, b) => a.localeCompare(b));
-    sorted.forEach(item => {
-      const opt = document.createElement("option");
-      opt.value = item;
-      opt.textContent = item;
-      if (selectedVal && selectedVal.trim().toLowerCase() === item.trim().toLowerCase()) {
-        opt.selected = true;
-      }
-      selectEl.appendChild(opt);
-    });
+  populateTarget(targetEl, items, selectedVal = "", defaultLabel = null) {
+    if (!targetEl) return;
 
-    // Add custom typing option at the end
-    const customOpt = document.createElement("option");
-    customOpt.value = this.customOptionValue;
-    customOpt.textContent = "+ Other (Type custom...)";
-    selectEl.appendChild(customOpt);
+    const listId = targetEl.getAttribute ? targetEl.getAttribute("list") : null;
+    let datalistEl = targetEl.list || (listId ? document.getElementById(listId) : null);
+
+    const isSelect = targetEl.tagName && targetEl.tagName.toLowerCase() === "select";
+    const sorted = [...(items || [])].sort((a, b) => a.localeCompare(b));
+
+    if (datalistEl) {
+      datalistEl.innerHTML = "";
+      sorted.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        datalistEl.appendChild(opt);
+      });
+      if (selectedVal) {
+        targetEl.value = selectedVal;
+      }
+    } else if (isSelect) {
+      const placeholder = defaultLabel !== null ? defaultLabel : this.defaultSelectText;
+      targetEl.innerHTML = `<option value="">${placeholder}</option>`;
+      let hasMatch = false;
+
+      sorted.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        opt.textContent = item;
+        if (selectedVal && selectedVal.trim().toLowerCase() === item.trim().toLowerCase()) {
+          opt.selected = true;
+          hasMatch = true;
+        }
+        targetEl.appendChild(opt);
+      });
+
+      if (selectedVal && !hasMatch && selectedVal !== this.customOptionValue) {
+        const customOpt = document.createElement("option");
+        customOpt.value = selectedVal;
+        customOpt.textContent = selectedVal;
+        customOpt.selected = true;
+        targetEl.appendChild(customOpt);
+      }
+    } else {
+      if (selectedVal) {
+        targetEl.value = selectedVal;
+      }
+    }
+  },
+
+  populateSelect(selectEl, items, selectedVal = "", defaultLabel = null) {
+    this.populateTarget(selectEl, items, selectedVal, defaultLabel);
   },
 
   getCountries() {
@@ -713,7 +742,6 @@ const Locations = {
     const districtObj = LocationData[country][state][district];
     if (Array.isArray(districtObj)) return districtObj;
     if (!mandal || !districtObj[mandal]) {
-      // Return all villages in district if mandal is not specified
       const allVillages = [];
       Object.values(districtObj).forEach(arr => {
         if (Array.isArray(arr)) allVillages.push(...arr);
@@ -723,9 +751,6 @@ const Locations = {
     return districtObj[mandal] || [];
   },
 
-  /**
-   * Enhanced Cascading helper with State -> District -> Mandal -> Village hierarchy
-   */
   setupFullCascading({
     country = "India",
     stateEl,
@@ -733,109 +758,82 @@ const Locations = {
     mandalEl,
     villageEl,
     initialValues = {},
-    customPromptCallback = null
+    placeholders = {
+      state: "-- Select State --",
+      district: "-- Select District --",
+      mandal: "-- Select Mandal / Taluk --",
+      village: "-- Select Village / Locality --"
+    }
   }) {
     if (!stateEl) return;
 
-    // Helper to handle "+ Other" prompt
-    const handleCustomOption = (selectEl, title, onValueEntered) => {
-      selectEl.addEventListener("change", () => {
-        if (selectEl.value === Locations.customOptionValue) {
-          const userVal = window.prompt(`Enter custom ${title}:`);
-          if (userVal && userVal.trim()) {
-            const cleanVal = userVal.trim();
-            // Add as a new selected option before the custom trigger
-            const newOpt = document.createElement("option");
-            newOpt.value = cleanVal;
-            newOpt.textContent = cleanVal;
-            newOpt.selected = true;
-            selectEl.insertBefore(newOpt, selectEl.lastElementChild);
-            if (onValueEntered) onValueEntered(cleanVal);
-          } else {
-            selectEl.value = "";
-          }
-        }
-      });
-    };
-
-    // 1. Populate States
-    const states = this.getStates(country);
-    this.populateSelect(stateEl, states, initialValues.state || "", "All States");
-
-    const updateDistricts = (stateVal, selectedDistrict = "") => {
-      if (!districtEl) return;
-      if (!stateVal) {
-        districtEl.innerHTML = `<option value="">All Districts</option>`;
-        updateMandals("", "", "");
-        return;
-      }
-      const districts = this.getDistricts(country, stateVal);
-      this.populateSelect(districtEl, districts, selectedDistrict, "All Districts");
-      updateMandals(stateVal, districtEl.value, "");
-    };
-
-    const updateMandals = (stateVal, districtVal, selectedMandal = "") => {
-      if (!mandalEl) return;
-      if (!districtVal) {
-        mandalEl.innerHTML = `<option value="">All Mandals / Taluks</option>`;
-        updateVillages(stateVal, districtVal, "", "");
-        return;
-      }
-      const mandals = this.getMandals(country, stateVal, districtVal);
-      this.populateSelect(mandalEl, mandals, selectedMandal, "All Mandals / Taluks");
-      updateVillages(stateVal, districtVal, mandalEl.value, "");
-    };
+    const statePh = placeholders?.state || "-- Select State --";
+    const districtPh = placeholders?.district || "-- Select District --";
+    const mandalPh = placeholders?.mandal || "-- Select Mandal / Taluk --";
+    const villagePh = placeholders?.village || "-- Select Village / Locality --";
 
     const updateVillages = (stateVal, districtVal, mandalVal, selectedVillage = "") => {
       if (!villageEl) return;
-      if (!districtVal) {
-        villageEl.innerHTML = `<option value="">All Villages / Towns</option>`;
-        return;
-      }
       const villages = this.getVillages(country, stateVal, districtVal, mandalVal);
-      this.populateSelect(villageEl, villages, selectedVillage, "All Villages / Towns");
+      this.populateTarget(villageEl, villages, selectedVillage, villagePh);
     };
 
-    // Attach Change Events
-    stateEl.addEventListener("change", () => {
-      updateDistricts(stateEl.value, "");
-    });
+    const updateMandals = (stateVal, districtVal, selectedMandal = "", selectedVillage = "") => {
+      if (!mandalEl) return;
+      const mandals = this.getMandals(country, stateVal, districtVal);
+      this.populateTarget(mandalEl, mandals, selectedMandal, mandalPh);
+      updateVillages(stateVal, districtVal, mandalEl.value || selectedMandal, selectedVillage);
+    };
+
+    const updateDistricts = (stateVal, selectedDistrict = "", selectedMandal = "", selectedVillage = "") => {
+      if (!districtEl) return;
+      const districts = this.getDistricts(country, stateVal);
+      this.populateTarget(districtEl, districts, selectedDistrict, districtPh);
+      updateMandals(stateVal, districtEl.value || selectedDistrict, selectedMandal, selectedVillage);
+    };
+
+    // 1. Populate initial States
+    const states = this.getStates(country);
+    this.populateTarget(stateEl, states, initialValues.state || "", statePh);
+
+    // 2. Event Handlers for both typing and selecting
+    const handleStateChange = () => {
+      const sVal = stateEl.value?.trim() || "";
+      updateDistricts(sVal, "", "", "");
+    };
+
+    const handleDistrictChange = () => {
+      const sVal = stateEl?.value?.trim() || "";
+      const dVal = districtEl?.value?.trim() || "";
+      updateMandals(sVal, dVal, "", "");
+    };
+
+    const handleMandalChange = () => {
+      const sVal = stateEl?.value?.trim() || "";
+      const dVal = districtEl?.value?.trim() || "";
+      const mVal = mandalEl?.value?.trim() || "";
+      updateVillages(sVal, dVal, mVal, "");
+    };
+
+    stateEl.oninput = handleStateChange;
+    stateEl.onchange = handleStateChange;
 
     if (districtEl) {
-      districtEl.addEventListener("change", () => {
-        if (districtEl.value !== Locations.customOptionValue) {
-          updateMandals(stateEl.value, districtEl.value, "");
-        }
-      });
-      handleCustomOption(districtEl, "District", (val) => updateMandals(stateEl.value, val, ""));
+      districtEl.oninput = handleDistrictChange;
+      districtEl.onchange = handleDistrictChange;
     }
 
     if (mandalEl) {
-      mandalEl.addEventListener("change", () => {
-        if (mandalEl.value !== Locations.customOptionValue) {
-          updateVillages(stateEl.value, districtEl?.value || "", mandalEl.value, "");
-        }
-      });
-      handleCustomOption(mandalEl, "Mandal / Taluk", (val) => updateVillages(stateEl.value, districtEl?.value || "", val, ""));
+      mandalEl.oninput = handleMandalChange;
+      mandalEl.onchange = handleMandalChange;
     }
 
-    if (villageEl) {
-      handleCustomOption(villageEl, "Village / Locality", () => {});
-    }
-
-    // Initial Trigger with pre-supplied values
+    // 3. Trigger initial cascade if pre-supplied values exist
     if (initialValues.state) {
-      updateDistricts(initialValues.state, initialValues.district || "");
-      if (initialValues.district) {
-        updateMandals(initialValues.state, initialValues.district, initialValues.mandal || "");
-        if (initialValues.mandal) {
-          updateVillages(initialValues.state, initialValues.district, initialValues.mandal, initialValues.village || "");
-        }
-      }
+      updateDistricts(initialValues.state, initialValues.district || "", initialValues.mandal || "", initialValues.village || "");
     }
   },
 
-  /** Backward compatibility helper **/
   setupCascading(countryEl, stateEl, districtEl, cityEl, initialValues = {}) {
     this.setupFullCascading({
       country: countryEl ? countryEl.value || "India" : "India",

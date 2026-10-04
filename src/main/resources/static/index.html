@@ -177,9 +177,8 @@
                     <label class="form-label-custom" for="hero-state">
                       <i class="bi bi-map-fill"></i> State / UT
                     </label>
-                    <select class="form-select-custom" id="hero-state">
-                      <option value="">All States</option>
-                    </select>
+                    <input type="text" class="form-control" id="hero-state" list="hero-states-list" placeholder="State (e.g. Andhra Pradesh)" autocomplete="off">
+                    <datalist id="hero-states-list"></datalist>
                   </div>
                 </div>
 
@@ -188,9 +187,8 @@
                     <label class="form-label-custom" for="hero-district">
                       <i class="bi bi-pin-map-fill"></i> District
                     </label>
-                    <select class="form-select-custom" id="hero-district">
-                      <option value="">All Districts</option>
-                    </select>
+                    <input type="text" class="form-control" id="hero-district" list="hero-districts-list" placeholder="District (e.g. Guntur)" autocomplete="off">
+                    <datalist id="hero-districts-list"></datalist>
                   </div>
                 </div>
               </div>
@@ -201,9 +199,8 @@
                     <label class="form-label-custom" for="hero-mandal">
                       <i class="bi bi-building"></i> Mandal / Taluk
                     </label>
-                    <select class="form-select-custom" id="hero-mandal">
-                      <option value="">All Mandals / Taluks</option>
-                    </select>
+                    <input type="text" class="form-control" id="hero-mandal" list="hero-mandals-list" placeholder="Mandal (e.g. Tenali)" autocomplete="off">
+                    <datalist id="hero-mandals-list"></datalist>
                   </div>
                 </div>
 
@@ -212,9 +209,8 @@
                     <label class="form-label-custom" for="hero-village">
                       <i class="bi bi-houses-fill"></i> Village / Locality
                     </label>
-                    <select class="form-select-custom" id="hero-village">
-                      <option value="">All Villages / Towns</option>
-                    </select>
+                    <input type="text" class="form-control" id="hero-village" list="hero-villages-list" placeholder="Village (e.g. Nandhivelugu)" autocomplete="off">
+                    <datalist id="hero-villages-list"></datalist>
                   </div>
                 </div>
               </div>
@@ -973,30 +969,26 @@
             <div class="row g-2 mb-3">
               <div class="col-md-6">
                 <label class="form-label small fw-semibold">State / UT</label>
-                <select class="form-select" id="donor-state" required>
-                  <option value="">-----Select State-----</option>
-                </select>
+                <input type="text" class="form-control" id="donor-state" list="donor-states-list" placeholder="Type or select State (e.g. Andhra Pradesh)" required autocomplete="off">
+                <datalist id="donor-states-list"></datalist>
               </div>
               <div class="col-md-6">
                 <label class="form-label small fw-semibold">District</label>
-                <select class="form-select" id="donor-district" required>
-                  <option value="">-----Select District-----</option>
-                </select>
+                <input type="text" class="form-control" id="donor-district" list="donor-districts-list" placeholder="Type or select District (e.g. Guntur)" autocomplete="off">
+                <datalist id="donor-districts-list"></datalist>
               </div>
             </div>
 
             <div class="row g-2 mb-3">
               <div class="col-md-6">
                 <label class="form-label small fw-semibold">Mandal / Taluk</label>
-                <select class="form-select" id="donor-mandal" required>
-                  <option value="">-----Select Mandal-----</option>
-                </select>
+                <input type="text" class="form-control" id="donor-mandal" list="donor-mandals-list" placeholder="Type or select Mandal (e.g. Tenali)" autocomplete="off">
+                <datalist id="donor-mandals-list"></datalist>
               </div>
               <div class="col-md-6">
                 <label class="form-label small fw-semibold">Village / Locality</label>
-                <select class="form-select" id="donor-village" required>
-                  <option value="">-----Select Village-----</option>
-                </select>
+                <input type="text" class="form-control" id="donor-village" list="donor-villages-list" placeholder="Type or select Village (e.g. Nandhivelugu)" autocomplete="off">
+                <datalist id="donor-villages-list"></datalist>
               </div>
             </div>
 

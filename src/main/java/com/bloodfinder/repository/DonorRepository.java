@@ -31,7 +31,13 @@ public interface DonorRepository extends JpaRepository<Donor, Long> {
            "AND (:district IS NULL OR LOWER(d.district) LIKE LOWER(CONCAT('%', :district, '%'))) " +
            "AND (:mandal IS NULL OR LOWER(d.mandal) LIKE LOWER(CONCAT('%', :mandal, '%'))) " +
            "AND (:village IS NULL OR LOWER(d.village) LIKE LOWER(CONCAT('%', :village, '%'))) " +
-           "AND (:city IS NULL OR LOWER(d.city) LIKE LOWER(CONCAT('%', :city, '%'))) " +
+           "AND (:city IS NULL OR (" +
+           "     LOWER(d.city) LIKE LOWER(CONCAT('%', :city, '%')) OR " +
+           "     LOWER(d.village) LIKE LOWER(CONCAT('%', :city, '%')) OR " +
+           "     LOWER(d.mandal) LIKE LOWER(CONCAT('%', :city, '%')) OR " +
+           "     LOWER(d.district) LIKE LOWER(CONCAT('%', :city, '%')) OR " +
+           "     LOWER(d.address) LIKE LOWER(CONCAT('%', :city, '%'))" +
+           ")) " +
            "AND (:availability IS NULL OR d.availabilityStatus = :availability) " +
            "ORDER BY d.availabilityStatus ASC, d.createdAt DESC")
     List<Donor> searchDonors(
