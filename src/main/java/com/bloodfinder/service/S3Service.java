@@ -30,26 +30,33 @@ public class S3Service {
         System.out.println("Content Type  : " + file.getContentType());
         System.out.println("Size          : " + file.getSize());
 
-        byte[] bytes = file.getBytes();
-        System.out.println("Byte Length   : " + bytes.length);
-
         String originalName = file.getOriginalFilename();
 
-        String safeName = (originalName != null && !originalName.trim().isEmpty())
-                ? originalName.replaceAll("[^a-zA-Z0-9._-]", "_")
-                : "photo.jpg";
+        String extension = "";
 
-        String fileName = UUID.randomUUID() + "_" + safeName;
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf("."));
+        }
+
+        String fileName = UUID.randomUUID() + extension;
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
-                .contentType(file.getContentType())
+                .contentType(
+                        file.getContentType() != null
+                                ? file.getContentType()
+                                : "application/octet-stream"
+                )
                 .build();
 
         s3Client.putObject(
                 putObjectRequest,
-                RequestBody.fromBytes(bytes));
+                RequestBody.fromInputStream(
+                        file.getInputStream(),
+                        file.getSize()
+                )
+        );
 
         System.out.println("Upload completed.");
 
